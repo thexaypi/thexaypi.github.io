@@ -25,7 +25,8 @@
 <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
 <script>
 (function(){var h=document.documentElement;h.classList.remove('no-js');h.classList.add('js');
-try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){h.classList.add('fx');if(!location.hash&&(window.scrollY||0)<40){h.classList.add('intro');}}}catch(e){}})();
+try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){h.classList.add('fx');if(!location.hash&&(window.scrollY||0)<40){h.classList.add('intro');}}}catch(e){}
+try{var t=localStorage.getItem('aitteTheme');if(t&&(t==='dark'||t==='vibe'))h.setAttribute('data-theme',t);}catch(e){}})();
 </script>
 <style>
 /* =========================================================
@@ -43,6 +44,7 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){h.classList.add(
   --sodium:#FFB547;
   --ice:#8CCBFF;
   --signal:#7DFF9A;
+  --ink-inv:#05070B;
   --sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --ease:cubic-bezier(.16,1,.3,1);
@@ -51,8 +53,19 @@ try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){h.classList.add(
   --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
   color-scheme:dark;
 }
+/* ---------- themes: Scene (default — amber/ice noir), Dark (cool obsidian + violet/mint), Paper (warm editorial light, clay+ink), Film (plum dusk + gold/rose) ---------- */
+html[data-theme="dark"]{
+  --night:#000000;--ink:#F2F3F7;--ink-2:rgba(242,243,247,.64);--ink-3:rgba(242,243,247,.46);
+  --hair:rgba(242,243,247,.09);--hair-2:rgba(242,243,247,.17);
+  --sodium:#9B8CFF;--ice:#54D6FF;--signal:#54FFC9;color-scheme:dark;
+}
+html[data-theme="vibe"]{
+  --night:#1A1222;--ink:#F5E9DD;--ink-2:rgba(245,233,221,.72);--ink-3:rgba(245,233,221,.54);
+  --hair:rgba(245,233,221,.14);--hair-2:rgba(245,233,221,.24);
+  --sodium:#E8A23D;--ice:#DD93AC;--signal:#93B373;color-scheme:dark;--ink-inv:#1A1222;
+}
 *,*::before,*::after{box-sizing:border-box}
-html{background:#000;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:calc(var(--bt) + 12px);scroll-padding-bottom:var(--bb)}
+html{background:var(--night);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:calc(var(--bt) + 12px);scroll-padding-bottom:var(--bb);transition:background .01s}
 body{margin:0;background:var(--night);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;font-weight:400;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 img,svg,canvas{display:block}
 a{color:inherit;text-decoration:none}
@@ -60,17 +73,17 @@ button{font:inherit;color:inherit}
 p{margin:0}
 :focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
 ::selection{background:var(--sodium);color:#000}
-.skip-link{position:fixed;left:16px;top:-90px;z-index:120;background:var(--ink);color:#000;padding:10px 14px;font-size:14px;font-weight:500}
+.skip-link{position:fixed;left:16px;top:-90px;z-index:120;background:var(--ink);color:var(--ink-inv);padding:10px 14px;font-size:14px;font-weight:500}
 .skip-link:focus{top:calc(16px + var(--sat))}
 html.menu-open{overflow:hidden}
 
 /* ---------- film texture ---------- */
-.vignette{position:fixed;inset:0;z-index:44;pointer-events:none;background:radial-gradient(140% 110% at 50% 50%,transparent 62%,rgba(0,0,0,.28) 100%)}
+.vignette{position:fixed;inset:0;z-index:44;pointer-events:none;background:radial-gradient(140% 110% at 50% 50%,transparent 62%,var(--vig-edge,rgba(0,0,0,.28)) 100%)}
 .grain{position:fixed;inset:0;z-index:45;pointer-events:none;background-image:var(--grain,none);background-size:180px 180px;opacity:.14}
 @keyframes grain{0%{transform:translate(0,0)}12%{transform:translate(-3%,2%)}25%{transform:translate(2%,-4%)}37%{transform:translate(-4%,-1%)}50%{transform:translate(3%,3%)}62%{transform:translate(-2%,4%)}75%{transform:translate(4%,-2%)}87%{transform:translate(-1%,-3%)}100%{transform:translate(0,0)}}
 
 /* ---------- letterbox bars = the interface ---------- */
-.bar{position:fixed;left:0;right:0;z-index:50;background:#000}
+.bar{position:fixed;left:0;right:0;z-index:50;background:var(--night)}
 .bar-top{top:0;height:calc(var(--bt) + var(--sat))}
 .bar-top::after,.bar-bot::before{content:"";position:absolute;left:0;right:0;height:1px;background:rgba(236,239,244,.07)}
 .bar-top::after{bottom:0}
@@ -119,7 +132,7 @@ html.intro .bar-cta{display:none}
 /* ---------- buttons ---------- */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:0 24px;font-size:15px;font-weight:500;letter-spacing:-.005em;line-height:1;color:var(--ink);background:transparent;border:1px solid var(--hair-2);cursor:pointer;transition:background .35s var(--ease),color .35s var(--ease),border-color .35s var(--ease)}
 .btn:hover{border-color:rgba(236,239,244,.55)}
-.btn-primary{background:var(--ink);color:#05070B;border-color:var(--ink)}
+.btn-primary{background:var(--ink);color:var(--ink-inv);border-color:var(--ink)}
 .btn-primary:hover{background:#fff;border-color:#fff}
 .btn svg{width:11px;height:12px;flex:none}
 .nav-cta{min-height:38px;padding:0 16px;font-size:13.5px}
@@ -152,7 +165,7 @@ html.intro .curtain{display:block;animation:curtainFail .4s ease 6s forwards}
 .hero-fallback svg{position:absolute;inset:0;width:100%;height:100%}
 html.no-webgl .hero-fallback{opacity:1}
 html.no-webgl #scene{display:none}
-.hero-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(2,3,6,.82) 0%,rgba(2,3,6,.55) 30%,rgba(2,3,6,0) 60%)}
+.hero-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--scrim-1,rgba(2,3,6,.82)) 0%,var(--scrim-2,rgba(2,3,6,.55)) 30%,var(--scrim-3,rgba(2,3,6,0)) 60%)}
 .hero-fade{position:absolute;inset:0;background:#000;opacity:var(--hf,0);pointer-events:none;z-index:4}
 .hero-edge{position:absolute;left:0;right:0;bottom:0;height:30%;z-index:4;pointer-events:none;opacity:0;background:linear-gradient(rgba(0,0,0,0),#000 90%)}
 .locsuper{position:absolute;left:50%;top:50%;z-index:3;display:flex;flex-direction:column;align-items:center;gap:16px;padding:30px 46px;text-align:center;pointer-events:none;opacity:0;transform:translate3d(-50%,-50%,0)}
@@ -186,7 +199,7 @@ html.js.intro .title .rv{text-shadow:-7px 0 rgba(255,80,80,.55),7px 0 rgba(80,19
 html.js.intro .rv.in{opacity:1;filter:blur(0);transform:none}
 html.js.intro .title .rv.in{text-shadow:none;transition:opacity 1.3s var(--ease),filter 1.3s var(--ease),transform 1.3s var(--ease),text-shadow 1.6s var(--ease)}
 
-.hud{position:absolute;right:var(--gutter);bottom:calc(var(--bba) + clamp(18px,3.2vh,34px));display:grid;grid-template-columns:minmax(0,214px);border:1px solid var(--hair);background:rgba(2,3,6,.58)}
+.hud{position:absolute;right:var(--gutter);bottom:calc(var(--bba) + clamp(18px,3.2vh,34px));display:grid;grid-template-columns:minmax(0,214px);border:1px solid var(--hair);background:var(--panel-bg,rgba(2,3,6,.58))}
 .hud-cell{padding:12px 15px 13px}
 .hud-cell + .hud-cell{border-top:1px solid var(--hair)}
 .hud-top{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--ink-2)}
@@ -283,7 +296,7 @@ html:not(.fx) .tticks,html:not(.fx) .city-far,html:not(.fx) .trailer-hint,html:n
 html:not(.fx) .tc-geo{clip-path:none}
 
 /* ---------- scenes ---------- */
-.scene{position:relative;padding:clamp(112px,16vh,180px) var(--gutter)}
+.scene{position:relative;padding:clamp(60px,8vh,100px) var(--gutter)}
 .wrap{max-width:1240px;margin:0 auto}
 .scene-head{max-width:780px;margin-bottom:clamp(52px,7vw,96px)}
 .slate{display:flex;align-items:center;gap:14px;margin:0 0 24px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
@@ -321,6 +334,43 @@ html.fx .panel.in .s{stroke-dashoffset:0}
 .fnum.big{left:14px;right:auto;top:10px;bottom:auto;font-size:12px;color:var(--ink-2)}
 .plabel{margin:22px 0 10px;font-family:var(--mono);font-size:12px;color:var(--sodium)}
 
+/* why — console: search pill, hopping dino, value nodes, match readout */
+.why-console{position:relative;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(14px,1.6vw,22px);margin-bottom:clamp(40px,5.4vw,72px)}
+.why-flow{position:relative;overflow:hidden;padding:clamp(28px,3.4vw,46px) clamp(18px,2.6vw,34px) clamp(22px,2.8vw,32px);border:0;background:none}
+.why-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(140,203,255,.16) 1px,transparent 1.4px);background-size:16px 16px;mask-image:radial-gradient(90% 80% at 50% 20%,#000,transparent 85%);opacity:.8;pointer-events:none}
+.why-pill{position:relative;display:flex;align-items:center;justify-content:center;gap:2px;margin:0 auto;padding:11px 22px;width:fit-content;min-width:170px;border-radius:999px;border:1px solid rgba(140,203,255,.35);background:linear-gradient(180deg,rgba(140,203,255,.1),rgba(5,7,12,.5));box-shadow:0 0 0 1px rgba(140,203,255,.05),0 0 24px rgba(140,203,255,.18);font-family:var(--mono);font-size:13px;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.why-pill-text{font-style:italic}
+.why-pill.searching .why-pill-text{color:var(--ice)}
+.why-pill-cursor{width:1.4px;height:14px;background:var(--ice);animation:whyBlink 1s steps(2,jump-none) infinite}
+@keyframes whyBlink{50%{opacity:0}}
+.why-rail{position:relative;margin:clamp(42px,5.2vw,62px) 2.5% 0;height:1px;background:var(--hair-2)}
+.why-rail-dot{position:absolute;top:50%;left:0;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--sodium);box-shadow:0 0 10px var(--sodium);opacity:0;transform:translate3d(0,0,0)}
+.why-dino{position:absolute;left:0;top:0;width:40px;height:34px;color:var(--sodium);filter:drop-shadow(0 0 7px rgba(255,181,71,.55));pointer-events:none;will-change:transform;transition:opacity .3s}
+.why-dino-svg{width:100%;height:100%;overflow:visible}
+.dino-s{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.dino-eye{fill:currentColor;stroke:none}
+.why-dino.hop{animation:whyHop .45s var(--ease)}
+@keyframes whyHop{0%{transform:scale(1,1) translateY(0) var(--flip,)}35%{transform:scale(1.12,.8) translateY(2px) var(--flip,)}100%{transform:scale(1,1) translateY(0) var(--flip,)}}
+.why-nodes{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.why-node{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 14px;border:1px solid var(--hair);background:rgba(236,239,244,.02);color:var(--ink-2);cursor:pointer;transition:border-color .3s,background .3s,color .3s;-webkit-tap-highlight-color:transparent}
+.why-node .wn-k{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em}
+.why-node .wn-t{font-size:13px;font-weight:500;color:var(--ink)}
+.why-node.done{border-color:rgba(140,203,255,.45);background:rgba(140,203,255,.07)}
+.why-node.done .wn-k{color:var(--ice)}
+.why-node.done .wn-k::after{content:" ✓"}
+.why-node.active{border-color:var(--sodium);background:rgba(255,181,71,.08);box-shadow:0 0 18px rgba(255,181,71,.14) inset}
+.why-node.active .wn-k,.why-node.active .wn-t{color:var(--sodium)}
+.why-hint{display:block;margin-top:16px;font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:center}
+.why-match{position:relative;display:flex;flex-direction:column;padding:clamp(24px,2.8vw,34px);border:1px solid var(--hair);background:linear-gradient(180deg,rgba(236,239,244,.025),rgba(236,239,244,0) 46%)}
+.why-match-k{margin:0 0 20px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.why-match-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;font-size:15px;color:var(--ink-2)}
+.why-match-pct{font-family:var(--mono);font-size:clamp(30px,3vw,38px);font-weight:500;color:var(--signal);font-variant-numeric:tabular-nums}
+.why-match .meters{flex:1}
+.why-match-foot{margin:22px 0 0;font-size:12.5px;line-height:1.5;color:var(--ink-3)}
+@media (max-width:900px){.why-console{grid-template-columns:minmax(0,1fr)}.why-nodes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+html:not(.fx) .why-dino{transition:none}
+html:not(.fx) .why-dino.hop{animation:none}
+
 /* why — four principles */
 .grid4{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--hair)}
 .grid4::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(440px circle at var(--mx,50%) var(--my,50%),rgba(140,203,255,.075),transparent 62%);opacity:0;transition:opacity .5s}
@@ -356,9 +406,9 @@ html.fx .mon-main:not(.in) .mbar i.on{background:rgba(236,239,244,.1)}
 
 /* pricing */
 .toggle-wrap{display:flex;justify-content:center;margin:-20px 0 clamp(150px,22vh,220px)}
-.toggle{position:relative;display:inline-flex;padding:4px;border:1px solid var(--hair-2);background:#000}
+.toggle{position:relative;display:inline-flex;padding:4px;border:1px solid var(--hair-2);background:var(--panel-bg,#000)}
 .toggle button{position:relative;z-index:1;display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 20px;border:0;background:none;font-size:14px;font-weight:500;color:var(--ink-2);cursor:pointer;transition:color .45s var(--ease)}
-.toggle button[aria-pressed="true"]{color:#05070B}
+.toggle button[aria-pressed="true"]{color:var(--ink-inv)}
 .knob{position:absolute;top:4px;bottom:4px;left:0;width:var(--kw,0px);transform:translateX(var(--kx,4px));background:var(--ink);transition:transform .55s var(--ease),width .55s var(--ease)}
 .save{font-family:var(--mono);font-size:10.5px;padding:3px 6px;border:1px solid currentColor;opacity:.9}
 .plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2vw,28px);max-width:1000px;margin:0 auto}
@@ -448,10 +498,16 @@ html.fx .mon-main:not(.in) .mbar i.on{background:rgba(236,239,244,.1)}
 .hiw-body p{font-size:13.5px;line-height:1.5;color:var(--ink-2);margin:0}
 .hiw-signature{margin-top:clamp(48px,6vw,72px);text-align:center}
 .hiw-showcase{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1280px;margin:0 auto}
-.hiw-bm{position:relative;padding:26px 40px 26px 26px;border:1px solid var(--hair);border-radius:16px;background:linear-gradient(160deg,rgba(255,255,255,.035),rgba(5,7,11,.5));clip-path:polygon(0 0,calc(100% - 30px) 0,100% 30px,100% 100%,0 100%);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease;cursor:pointer;text-align:left}
+.hiw-bm{position:relative;isolation:isolate;padding:28px 26px 26px;border:1px solid var(--hair);border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.035),rgba(5,7,11,.5));transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease;cursor:pointer;text-align:left}
+.hiw-bm::before{content:"";position:absolute;z-index:-1;inset:14%;border-radius:50%;filter:blur(28px);opacity:.14;background:radial-gradient(closest-side,var(--ice),transparent 72%);animation:hiw-smoke 12s ease-in-out infinite;animation-delay:calc(var(--k,0) * -1.7s);pointer-events:none}
+.hiw-bm:nth-child(even)::before{background:radial-gradient(closest-side,var(--sodium),transparent 72%)}
+@keyframes hiw-smoke{0%,100%{transform:translate(-7%,5%) scale(1)}50%{transform:translate(7%,-6%) scale(1.2)}}
+.hiw-bm::after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:60px;height:14px;background:var(--night);border-radius:0 0 11px 11px;z-index:2;pointer-events:none}
 .hiw-bm:hover{box-shadow:0 30px 70px -30px rgba(255,181,71,.3)}
+.hiw-bm:hover::before{opacity:.26}
 .hiw-bm:active{transform:scale(1.015)}
-.hiw-bm-tag{position:absolute;top:13px;right:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ink-3)}
+html:not(.fx) .hiw-bm::before{animation:none;opacity:.1}
+.hiw-bm-tag{position:absolute;z-index:2;top:20px;right:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ink-3)}
 .hiw-bm-canvas-wrap{position:relative;margin:18px 0 20px;border-radius:10px;overflow:hidden;height:clamp(160px,22vw,220px);background:linear-gradient(135deg,#1c2a44,#0b0f18 55%,#241a10)}
 .hiw-bm-canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hiw-bm-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.55);pointer-events:none;transition:opacity .5s ease;z-index:2}
@@ -461,6 +517,7 @@ html.fx .mon-main:not(.in) .mbar i.on{background:rgba(236,239,244,.1)}
 .hiw-bm-dots i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--hair);margin-right:6px}
 .hiw-bm-dots i:first-child{background:var(--sodium)}
 .hiw-caption{max-width:560px;margin:20px auto 0;color:var(--ink-2);font-size:13.5px;line-height:1.55}
+
 html:not(.fx) .hiw-bm-hint{display:none}
 html:not(.fx) #hiwCanvas{display:none}
 html:not(.fx) .hiw-lens{display:none}
@@ -475,7 +532,7 @@ html:not(.fx) .hiw-lens{display:none}
 .hiw-lens::before{content:"";position:absolute;left:18%;top:10%;width:46%;height:26%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,0));filter:blur(1.5px);transform:rotate(-20deg)}
 @media (max-width:1180px){.hiw-showcase{grid-template-columns:repeat(2,minmax(0,1fr));max-width:720px}}
 @media (max-width:640px){.hiw-showcase{grid-template-columns:1fr;max-width:400px}}
-@media (max-width:540px){.hiw-bm{padding:22px 32px 22px 20px}.hiw-lens{width:104px;height:104px}}
+@media (max-width:540px){.hiw-bm{padding:24px 20px 22px}.hiw-lens{width:104px;height:104px}}
 /* spotify coverflow showcase */
 .hiw-bm--sp{display:flex;flex-direction:column}
 .hiw-sp-wrap{margin:16px 0 20px;border-radius:12px;padding:16px 14px 14px;background:radial-gradient(130% 110% at 30% 0%,rgba(29,185,84,.1),transparent 55%),linear-gradient(170deg,#1c2130,#0a0c12 70%);border:1px solid rgba(255,255,255,.06)}
@@ -549,6 +606,54 @@ html:not(.fx) .hiw-sh-shard{transform:none!important}
 .hiw-cb-blob{position:absolute;left:38%;top:34%;width:40%;height:46%;border-radius:46% 54% 58% 42%/54% 44% 56% 46%;
   background:conic-gradient(from 120deg,#8CCBFF,#C9A6FF,#FF9ED6,#FFD37A,#8CCBFF);filter:blur(8px) saturate(1.4);opacity:.85;mix-blend-mode:screen}
 html:not(.fx) .hiw-cb-tilt{transform:none!important}
+
+/* quiz funnel: step chain joined by a flowing wire, radios genuinely pick the ritual colour */
+.hiw-bm--quiz{display:flex;flex-direction:column}
+.hiw-qz-wrap{position:relative;margin:16px 0 20px;border-radius:10px;overflow:hidden;height:clamp(330px,42vw,400px);background:radial-gradient(130% 120% at 28% 8%,#1a140e,#05060a 65%);isolation:isolate;--qz-pc:#8CCBFF}
+.hiw-qz-wire{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+#hiwQzPath{fill:none;stroke:var(--sodium);stroke-width:.6;vector-effect:non-scaling-stroke;stroke-linecap:round;opacity:.8;filter:drop-shadow(0 0 2px rgba(255,181,71,.6));stroke-dasharray:1.2 1.6;animation:hiwQzFlow 1s linear infinite}
+@keyframes hiwQzFlow{to{stroke-dashoffset:-5.6}}
+.hiw-qz-pulse{fill:var(--sodium);filter:drop-shadow(0 0 3px rgba(255,181,71,.95))}
+.hiw-qz-step{position:absolute;padding:10px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(165deg,rgba(28,22,16,.94),rgba(8,9,13,.94));box-shadow:0 14px 30px -14px rgba(0,0,0,.65);z-index:2}
+.hiw-qz-s1{left:4%;top:3%;width:54%}
+.hiw-qz-s2{left:36%;top:29%;width:60%}
+.hiw-qz-s3{left:4%;top:64%;width:66%}
+.hiw-qz-dots{display:flex;gap:4px;margin-bottom:7px}
+.hiw-qz-dots i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.25)}
+.hiw-qz-k{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--sodium);margin-bottom:4px}
+.hiw-qz-step b{display:block;font-size:13.5px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.hiw-qz-step > small{display:block;margin-top:3px;font-size:10.5px;color:var(--ink-3)}
+.hiw-qz-opt{position:relative;display:flex;align-items:center;gap:7px;margin-top:6px;font-size:10.5px;color:var(--ink-2);cursor:pointer}
+.hiw-qz-opt input{position:absolute;opacity:0;width:16px;height:16px;margin:0;cursor:pointer}
+.hiw-qz-dot{position:relative;flex:none;width:13px;height:13px;border-radius:50%;border:1.4px solid rgba(255,255,255,.3);transition:border-color .25s,box-shadow .25s;pointer-events:none}
+.hiw-qz-dot::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--sodium);opacity:0;transform:scale(.4);transition:opacity .2s,transform .2s}
+.hiw-qz-opt input:checked + .hiw-qz-dot{border-color:var(--sodium);box-shadow:0 0 10px rgba(255,181,71,.4)}
+.hiw-qz-opt input:checked + .hiw-qz-dot::after{opacity:1;transform:scale(1)}
+.hiw-qz-opt input:focus-visible + .hiw-qz-dot{outline:2px solid var(--ice);outline-offset:2px}
+.hiw-qz-prods{display:flex;align-items:flex-end;gap:6px;margin:8px 0}
+.hiw-qz-prods i{width:15px;height:22px;border-radius:4px 4px 7px 7px;background:linear-gradient(160deg,var(--qz-pc),rgba(5,7,11,.9));opacity:.92;transition:background .4s ease}
+.hiw-qz-prods i:nth-child(2){height:27px}
+.hiw-qz-cta{margin-top:2px;padding:6px 12px;border-radius:999px;border:0;background:var(--sodium);color:#05070B;font-family:var(--mono);font-size:10px;letter-spacing:.04em;cursor:pointer;transition:box-shadow .2s}
+.hiw-qz-cta:hover{box-shadow:0 0 18px rgba(255,181,71,.5)}
+.hiw-qz-cta.go{animation:hiwQzGo .5s ease}
+@keyframes hiwQzGo{0%{transform:scale(1)}40%{transform:scale(.9)}100%{transform:scale(1)}}
+html:not(.fx) #hiwQzPath{animation:none;stroke-dasharray:none}
+html:not(.fx) .hiw-qz-pulse{display:none}
+@media (max-width:540px){.hiw-qz-step b{font-size:12.5px}.hiw-qz-k{font-size:8px}.hiw-qz-opt{font-size:9.5px}}
+
+/* AI support pipeline: stacked glass chips cycle on their own, fan out on drag, tap to jump */
+.hiw-bm--flow{display:flex;flex-direction:column}
+.hiw-fl-wrap{position:relative;margin:16px 0 20px;border-radius:10px;overflow:visible;height:clamp(240px,30vw,290px);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.hiw-fl-wrap::before{content:"";position:absolute;inset:0;border-radius:10px;background:radial-gradient(130% 120% at 72% 18%,#0c1626,#05060a 65%);z-index:0}
+.hiw-fl-wrap.dragging{cursor:grabbing}
+.hiw-fl-chip{position:absolute;left:6%;top:3%;width:64%;padding:12px 14px;border-radius:12px;border:1px solid rgba(140,203,255,.22);background:linear-gradient(160deg,rgba(18,26,40,.95),rgba(6,9,14,.96));box-shadow:0 16px 30px -16px rgba(0,0,0,.6);display:flex;align-items:center;gap:11px;will-change:transform;transform:translate3d(calc(var(--i) * 20px),calc(var(--i) * 46px),0) scale(calc(1 - var(--i) * .025));z-index:calc(4 - var(--i));transition:box-shadow .3s ease;cursor:pointer}
+.hiw-fl-chip.active{box-shadow:0 0 0 1px rgba(140,203,255,.5),0 18px 40px -14px rgba(140,203,255,.5)}
+.hiw-fl-ico{flex:none;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(140,203,255,.14);color:var(--ice)}
+.hiw-fl-ico svg{width:15px;height:15px}
+.hiw-fl-chip b{display:block;font-size:13px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.hiw-fl-chip small{display:block;margin-top:2px;font-size:10.5px;color:var(--ink-3);font-style:italic}
+html:not(.fx) .hiw-fl-chip{transition:none}
+@media (max-width:540px){.hiw-fl-chip b{font-size:12px}.hiw-fl-chip small{font-size:9.5px}}
 
 /* faq */
 .faq-wrap{max-width:980px}
@@ -647,7 +752,7 @@ html:not(.fx) .bfly-drop{display:none}
 html:not(.fx) .bfly-tilt{transform:none!important}
 html:not(.fx) .bfly-layer{transform:none!important}
 @media (max-width:759px){.bfly-stage{width:min(220px,58vw);height:clamp(120px,22vh,160px);top:clamp(10px,3vh,30px)}.scene.contact{padding-top:clamp(190px,32vh,280px)}.bfly-tag{font-size:9px}}
-.term{position:relative;max-width:1080px;margin:0 auto;overflow:hidden;border:1px solid var(--hair-2);background:#010303;box-shadow:0 50px 140px -50px rgba(125,255,154,.22)}
+.term{--night:#05070C;--ink:#ECEFF4;--ink-2:rgba(236,239,244,.68);--ink-3:rgba(236,239,244,.56);--ink-inv:#05070B;--sodium:#FFB547;--ice:#8CCBFF;--signal:#7DFF9A;--hair:rgba(236,239,244,.11);--hair-2:rgba(236,239,244,.2);position:relative;max-width:1080px;margin:0 auto;overflow:hidden;border:1px solid var(--hair-2);background:radial-gradient(130% 110% at 50% 0%,#131A22 0%,#0C1117 46%,#0A0E13 100%);box-shadow:0 50px 140px -50px rgba(125,255,154,.22)}
 .term::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(236,239,244,.03) 0 1px,transparent 1px 3px)}
 .term::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 100% at 50% 50%,transparent 62%,rgba(0,0,0,.5) 100%)}
 .term-bar{position:relative;z-index:3;display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--hair);font-family:var(--mono);font-size:12px;color:var(--ink-2)}
@@ -673,15 +778,60 @@ html.fx .term.in .tp{animation:appear .01s linear var(--del,0s) forwards}
 .term-p{margin-bottom:28px;font-size:clamp(17px,1.5vw,20px)}
 
 /* credits */
-.credits{position:relative;z-index:1;background:transparent;padding:clamp(120px,22vh,230px) var(--gutter) calc(clamp(90px,14vh,140px) + var(--bb));text-align:center}
+.credits{position:relative;z-index:1;background:transparent;padding:clamp(100px,18vh,200px) var(--gutter) var(--bb);text-align:center}
 .c-title{margin:0 -.44em 0 0;font-size:clamp(58px,13vw,210px);font-weight:200;line-height:1;letter-spacing:.44em}
-.c-tag{margin:30px auto 0;max-width:44ch;color:var(--ink-2)}
-.c-block{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 30px;max-width:760px;margin:clamp(60px,8vw,100px) auto 0;text-align:left}
-.c-role{justify-self:end;margin:0;padding-top:5px;font-family:var(--mono);font-size:12px;font-weight:400;color:var(--ink-3);text-align:right}
-.c-names{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:17px}
-.c-names a{border-bottom:1px solid transparent;transition:border-color .25s}
-.c-names a:hover{border-color:var(--sodium)}
-.c-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;margin-top:clamp(84px,12vw,150px);font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.ftr-bar{position:relative;display:inline-flex;align-items:center;gap:clamp(10px,1.6vw,18px);max-width:min(92vw,600px);width:max-content;margin:28px auto 0;padding:9px 9px 9px clamp(16px,2.2vw,24px);border-radius:999px;text-align:left;isolation:isolate;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,0) 44%),linear-gradient(calc(100deg + var(--hr,0) * 1deg),rgba(255,181,71,.16),rgba(140,203,255,.15) 52%,rgba(125,255,154,.13));border:1px solid var(--hair-2);box-shadow:0 1px 0 rgba(255,255,255,.07) inset,0 22px 50px -26px rgba(0,0,0,.65);transition:box-shadow .4s var(--ease),border-color .4s var(--ease)}
+.ftr-bar::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .45s var(--ease);background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.16),transparent 68%)}
+.ftr-bar.hot::before{opacity:1}
+.ftr-bar.hot{border-color:var(--hair);box-shadow:0 1px 0 rgba(255,255,255,.09) inset,0 30px 64px -26px rgba(0,0,0,.7)}
+.ftr-bar-chip{position:relative;z-index:1;flex:none;padding:7px 13px;border-radius:999px;background:var(--night);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.1em;color:var(--ink);white-space:nowrap}
+.ftr-bar-text{position:relative;z-index:1;flex:1;margin:0;min-width:0;font-size:13px;line-height:1.38;color:var(--ink-2)}
+.ftr-bar-arrow{position:relative;z-index:1;flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--ink-inv);transition:transform .5s var(--ease),background .35s var(--ease)}
+.ftr-bar-arrow svg{width:15px;height:15px}
+.ftr-bar:hover .ftr-bar-arrow,.ftr-bar.hot .ftr-bar-arrow{transform:rotate(45deg)}
+@media (max-width:560px){.ftr-bar{flex-wrap:wrap;border-radius:26px;padding:16px 16px 14px}.ftr-bar-chip{order:1}.ftr-bar-arrow{order:2;margin-left:auto}.ftr-bar-text{order:3;flex:1 1 100%}}
+.c-block{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 22px;max-width:580px;margin:clamp(36px,5.6vw,56px) auto 0;text-align:left}
+.c-role{justify-self:end;margin:0;padding-top:3px;font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);text-align:right;opacity:.75}
+.c-names{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:13.5px}
+.c-names a{position:relative;display:inline-block;padding-bottom:1px;color:var(--ink-2);transition:color .3s var(--ease),transform .4s var(--ease)}
+.c-names a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--sodium);transition:right .45s var(--ease)}
+.c-names a:hover{color:var(--ink);transform:translateX(2px)}
+.c-names a:hover::after{right:0}
+.c-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:7px 22px;margin-top:clamp(14px,2vw,20px);padding:0 var(--gutter);font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-3);opacity:.85}
+
+/* ---------- footer: full-bleed band + neon-smoke step cards + magnetic contact CTA ---------- */
+.ftr-band{position:relative;isolation:isolate;width:100vw;left:50%;transform:translateX(-50%);margin:clamp(32px,4.4vw,44px) 0 0;padding:clamp(20px,2.6vw,28px) 0 clamp(18px,2.2vw,24px);background:color-mix(in srgb,var(--ink) 4%,var(--night));border-top:1px solid var(--hair-2)}
+.ftr-band::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;background:radial-gradient(70% 70% at 50% 0%,color-mix(in srgb,var(--ice) 6%,transparent),transparent 72%)}
+.ftr-band>*{position:relative;z-index:1}
+.ftr-eyebrow{display:block;margin:0 0 16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--sodium);opacity:.8}
+.ftr-eyebrow-c{margin:0 0 14px;padding:0 var(--gutter)}
+.ftr-steps{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:clamp(12px,1.4vw,20px);margin:0;padding:0 var(--gutter);text-align:left}
+.stp{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:128px;padding:16px 14px 16px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,color-mix(in srgb,var(--ice) 10%,transparent),transparent 55%),var(--night);border:1px solid var(--hair);color:inherit;opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .55s var(--ease),border-color .4s var(--ease),box-shadow .5s var(--ease)}
+.ftr-steps.in .stp{opacity:1;transform:translateY(0);transition-delay:calc(var(--k,0) * 70ms)}
+.stp-glow{position:absolute;inset:-45%;z-index:0;pointer-events:none;background:radial-gradient(closest-side,color-mix(in srgb,var(--ice) 42%,transparent),transparent 72%);filter:blur(20px);opacity:.3;animation:stp-drift 10s ease-in-out infinite;animation-delay:calc(var(--k,0) * -1.4s)}
+@keyframes stp-drift{0%,100%{transform:translate(-8%,-6%) scale(1)}50%{transform:translate(8%,7%) scale(1.18)}}
+.stp::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .4s var(--ease);background:radial-gradient(130px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.12),transparent 70%)}
+.stp:hover::before{opacity:1}
+.stp:hover{border-color:color-mix(in srgb,var(--ice) 45%,transparent);box-shadow:0 20px 48px -26px color-mix(in srgb,var(--ice) 55%,transparent);transform:translateY(-4px)}
+.stp:hover .stp-glow{opacity:.7}
+.stp-badge{position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 8px;border-radius:6px 6px 6px 2px;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.02em;color:var(--night);background:linear-gradient(135deg,color-mix(in srgb,var(--ice) 55%,white),var(--ice) 55%,color-mix(in srgb,var(--ice) 60%,var(--night)));box-shadow:0 6px 16px -6px color-mix(in srgb,var(--ice) 65%,transparent)}
+.stp-ic{position:relative;z-index:2;width:22px;height:22px;color:var(--ice);opacity:.85;transition:color .35s var(--ease),opacity .35s var(--ease)}
+.stp-ic svg{width:100%;height:100%}
+.stp:hover .stp-ic{color:var(--ink);opacity:1}
+.stp-t{position:relative;z-index:2;margin-top:auto;font-size:13.5px;line-height:1.3;font-weight:500;color:var(--ink-2);transition:color .35s var(--ease)}
+.stp:hover .stp-t{color:var(--ink)}
+.ftr-contact{position:relative;margin:clamp(18px,2.4vw,26px) 0 0;padding:0 var(--gutter)}
+.ftr-mail{position:relative;display:inline-flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--hair-2);font-size:clamp(19px,2vw,25px);font-weight:500;letter-spacing:-.01em;color:var(--ink);transition:border-color .35s var(--ease)}
+.ftr-mail .fl-a{width:16px;height:16px;flex:none;opacity:.5;transition:transform .45s var(--ease),opacity .3s var(--ease)}
+.ftr-mail:hover{border-color:var(--sodium)}
+.ftr-mail:hover .fl-a{transform:translate(4px,-4px);opacity:1}
+.ftr-loc{margin:16px 0 0;font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:var(--ink-3)}
+html:not(.fx) .stp{opacity:1;transform:none;transition:none}
+html:not(.fx) .stp-glow{animation:none;opacity:.22}
+@media (max-width:980px){.ftr-steps{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:700px){.ftr-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.ftr-eyebrow-c,.ftr-steps,.ftr-contact{text-align:left}}
+@media (max-width:420px){.ftr-steps{grid-template-columns:minmax(0,1fr)}}
+html:not(.fx) .fn{opacity:1;transform:none;transition:none}
 /* holographic wireframe flower, blown by the cursor's motion */
 .holo-flower{position:absolute;left:6%;top:14%;width:min(260px,22vw);height:min(320px,38vh);z-index:0;perspective:900px;opacity:.9;pointer-events:none}
 .holo-flower::before{content:"";position:absolute;inset:-30%;background:radial-gradient(60% 55% at 50% 40%,rgba(140,203,255,.07),transparent 70%);pointer-events:none}
@@ -722,6 +872,23 @@ html[data-wx="rain"] .wx-ico,html[data-wx="snow"] .wx-ico,html[data-wx="fog"] .w
 html[data-wx="storm"] .wx-ico{color:#C4B5FD;animation:blink 2.4s steps(2,jump-none) infinite}
 .live-temp{color:var(--ink)}
 .track .lbl-wx{color:var(--ice)}
+/* ---------- theme switch: Scene / Dark / Paper / Film ---------- */
+.theme-switch{position:relative;margin-right:4px}
+.ts-btn{display:flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;border-radius:50%;border:1px solid var(--hair-2);background:rgba(236,239,244,.02);color:var(--ink-2);cursor:pointer;transition:color .3s,border-color .3s,background .3s,transform .3s;-webkit-tap-highlight-color:transparent}
+.ts-btn:hover{color:var(--ink);border-color:var(--hair-2);background:rgba(236,239,244,.06)}
+.ts-btn.open{transform:rotate(26deg)}
+.ts-ico{width:16px;height:16px}
+.ts-panel{position:absolute;top:calc(100% + 10px);right:0;display:grid;gap:3px;min-width:132px;padding:6px;border:1px solid var(--hair-2);border-radius:12px;background:var(--night);box-shadow:0 18px 40px rgba(0,0,0,.4);opacity:0;visibility:hidden;transform:translateY(-6px) scale(.96);transform-origin:top right;transition:opacity .22s var(--ease),transform .22s var(--ease),visibility 0s linear .22s}
+.theme-switch.open .ts-panel{opacity:1;visibility:visible;transform:translateY(0) scale(1);transition:opacity .22s var(--ease),transform .22s var(--ease)}
+.ts-opt{display:flex;align-items:center;gap:9px;padding:8px 10px;border:none;border-radius:8px;background:transparent;color:var(--ink-2);font-family:var(--sans);font-size:13px;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s}
+.ts-opt:hover{background:rgba(236,239,244,.06);color:var(--ink)}
+.ts-opt.on{color:var(--ink)}
+.ts-opt.on::after{content:"";margin-left:auto;width:5px;height:5px;border-radius:50%;background:var(--sodium);box-shadow:0 0 6px var(--sodium)}
+.ts-sw{flex:none;width:16px;height:16px;border-radius:50%;background:conic-gradient(var(--c1) 0 34%,var(--c2) 34% 67%,var(--c3) 67% 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.theme-reveal{position:fixed;inset:0;z-index:9999;pointer-events:none;clip-path:circle(0px at var(--tx,50%) var(--ty,50%));background:var(--rv-bg,#05070C)}
+.theme-reveal.grow{transition:clip-path .68s cubic-bezier(.22,1,.36,1),filter .68s ease;clip-path:circle(145% at var(--tx,50%) var(--ty,50%));filter:drop-shadow(0 0 34px var(--rv-glow,rgba(255,181,71,.45)))}
+.theme-reveal.fade{transition:opacity .5s ease;opacity:0;filter:none}
+html:not(.fx) .theme-reveal{display:none}
 /* ---------- living colour field behind the scenes ---------- */
 main{position:relative;z-index:1}
 #aura{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.6s var(--ease)}
@@ -794,7 +961,7 @@ main{position:relative;z-index:1}
   body{font-size:16px}
   .hero{height:180vh}
   .hero-copy{justify-content:flex-end;padding-bottom:calc(var(--bba) + 20px)}
-  .hero-scrim{background:linear-gradient(0deg,rgba(2,3,6,.95) 0%,rgba(2,3,6,.8) 38%,rgba(2,3,6,0) 70%)}
+  .hero-scrim{background:linear-gradient(0deg,var(--scrim-1v,rgba(2,3,6,.95)) 0%,var(--scrim-2v,rgba(2,3,6,.8)) 38%,var(--scrim-3,rgba(2,3,6,0)) 70%)}
   .title{font-size:clamp(40px,11.4vw,64px)}
   .lead{font-size:16px}
   .ctas .btn{flex:1 1 auto}
@@ -1031,7 +1198,7 @@ html:not(.fx) .film .mover{display:none}
 .bar-bot{background:transparent;pointer-events:none}
 .bar-bot::before{display:none}
 .transport{left:clamp(10px,1.6vw,22px);right:clamp(10px,1.6vw,22px);bottom:calc(var(--sab) + 10px);height:44px;border-radius:14px;padding:0 clamp(14px,1.6vw,22px);pointer-events:auto;
-  background:linear-gradient(180deg,rgba(15,18,26,.94),rgba(6,8,12,.96));box-shadow:0 0 0 1px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.06),0 18px 50px -20px rgba(0,0,0,.9)}
+  background:linear-gradient(180deg,var(--glass-1,rgba(15,18,26,.94)),var(--glass-2,rgba(6,8,12,.96)));box-shadow:0 0 0 1px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.06),0 18px 50px -20px rgba(0,0,0,.9)}
 @media (max-width:860px){.transport{left:8px;right:8px;bottom:calc(var(--sab) + 8px);border-radius:13px}}
 
 /* ---------- command bar (top navigation) ---------- */
@@ -1039,7 +1206,7 @@ html:not(.fx) .film .mover{display:none}
 .bar-top{background:transparent;pointer-events:none}
 .bar-top::after{display:none}
 .nav{pointer-events:auto;position:relative;height:54px;margin:calc(var(--sat) + 10px) clamp(10px,1.6vw,22px) 0;padding:0 8px 0 clamp(16px,1.6vw,22px);border-radius:14px;isolation:isolate;
-  background:linear-gradient(180deg,rgba(15,18,26,.94),rgba(6,8,12,.96));
+  background:linear-gradient(180deg,var(--glass-1,rgba(15,18,26,.94)),var(--glass-2,rgba(6,8,12,.96)));
   box-shadow:0 0 0 1px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.06),0 18px 50px -20px rgba(0,0,0,.9)}
 .nav::before{content:"";position:absolute;inset:0;z-index:0;border-radius:inherit;padding:1px;pointer-events:none;opacity:.9;
   background:conic-gradient(from var(--beam),transparent 0deg 250deg,rgba(140,203,255,.85) 318deg,#fff 330deg,rgba(255,181,71,.85) 342deg,transparent 360deg);
@@ -1096,19 +1263,29 @@ html:not(.fx) .film .mover{display:none}
       <a href="#security">Security</a>
     </div>
     <div class="wxbar"><span class="live-dot" aria-hidden="true"></span><span class="live-city">Rotterdam</span><time class="live-time" id="liveTime">--:--</time><span class="live-wx" id="liveWx" hidden><span class="wx-ico" id="wxIco" aria-hidden="true"></span><span class="live-temp" id="wxTemp"></span><span class="live-desc" id="wxDesc"></span></span></div>
+    <div class="theme-switch" id="themeSwitch">
+      <button type="button" class="ts-btn" id="tsBtn" aria-haspopup="true" aria-expanded="false" aria-label="Change theme">
+        <svg class="ts-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.1" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10 2.9 A7.1 7.1 0 0 1 10 17.1 Z" fill="currentColor"/></svg>
+      </button>
+      <div class="ts-panel" id="tsPanel" role="menu">
+        <button type="button" class="ts-opt on" data-theme="default" role="menuitem"><i class="ts-sw" style="--c1:#05070C;--c2:#FFB547;--c3:#8CCBFF"></i><span>Scene</span></button>
+        <button type="button" class="ts-opt" data-theme="dark" role="menuitem"><i class="ts-sw" style="--c1:#000;--c2:#9B8CFF;--c3:#54D6FF"></i><span>Dark</span></button>
+        <button type="button" class="ts-opt" data-theme="vibe" role="menuitem"><i class="ts-sw" style="--c1:#1A1222;--c2:#E8A23D;--c3:#DD93AC"></i><span>Film</span></button>
+      </div>
+    </div>
     <a class="btn nav-cta" href="#contact">Get in Touch</a>
     <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mob"><span></span><span></span></button>
   </nav>
 </div>
 <div class="mob" id="mob">
   <a href="#process"><small aria-hidden="true">SC 03</small>Process</a>
-  <a href="#about"><small aria-hidden="true">SC 12</small>About</a>
+  <a href="#about"><small aria-hidden="true">SC 11</small>About</a>
   <a href="#pricing"><small aria-hidden="true">SC 06</small>Pricing</a>
   <a href="#vservice"><small aria-hidden="true">SC 07</small>VService</a>
   <a href="#advisor"><small aria-hidden="true">SC 08</small>Price Advisor</a>
   <a href="#howitworks"><small aria-hidden="true">SC 09</small>How It Works</a>
   <a href="#security"><small aria-hidden="true">SC 11</small>Security</a>
-  <a href="#contact"><small aria-hidden="true">SC 13</small>Get in Touch</a>
+  <a href="#contact"><small aria-hidden="true">SC 12</small>Get in Touch</a>
 </div>
 
 <!-- BOTTOM LETTERBOX BAR: timecode, scene, timeline, sticky CTA -->
@@ -1265,6 +1442,41 @@ html:not(.fx) .film .mover{display:none}
       <h2 class="h2">Different by<br><em>Design</em></h2>
       <p class="lede">Structure, clarity, and executional discipline — not a template agency. Every project is intentional.</p>
     </header>
+
+    <div class="why-console" id="whyConsole">
+      <div class="why-flow">
+        <div class="why-dots" aria-hidden="true"></div>
+        <button type="button" class="why-pill" id="whyPill">
+          <span class="why-pill-text" id="whyPillText">why aitte?</span><span class="why-pill-cursor" aria-hidden="true"></span>
+        </button>
+        <div class="why-rail" aria-hidden="true"><i class="why-rail-dot" id="whyRailDot"></i></div>
+        <div class="why-dino" id="whyDino" aria-hidden="true">
+          <svg viewBox="0 0 48 40" class="why-dino-svg">
+            <path class="dino-s" d="M5,33 L5,23 L10,23 L10,16 L17,16 L17,10 L27,7 L35,9 L35,15 L41,16 L41,24 L45,25 L45,31 L39,31 L39,36 L31,36 L31,32 L15,32 L15,36 L9,36 L9,31 L5,31 Z"/>
+            <path class="dino-s dino-tail" d="M5,27 L-2,23 L5,22"/>
+            <circle class="dino-eye" cx="30" cy="13" r="1.4"/>
+          </svg>
+        </div>
+        <div class="why-nodes" id="whyNodes">
+          <button type="button" class="why-node" data-i="0"><span class="wn-k">01</span><span class="wn-t">Structure</span></button>
+          <button type="button" class="why-node" data-i="1"><span class="wn-k">02</span><span class="wn-t">Execution</span></button>
+          <button type="button" class="why-node" data-i="2"><span class="wn-k">03</span><span class="wn-t">Standards</span></button>
+          <button type="button" class="why-node" data-i="3"><span class="wn-k">04</span><span class="wn-t">Rotterdam</span></button>
+        </div>
+        <span class="why-hint" id="whyHint">tap a value to jump the dino</span>
+      </div>
+      <div class="why-match" id="whyMatch">
+        <p class="why-match-k">— AITTE Detail®</p>
+        <div class="why-match-top"><span>Client Fit</span><span class="why-match-pct" id="whyMatchPct">0%</span></div>
+        <div class="meters">
+          <div class="meter"><span>Structure</span><span class="mv" id="whyMv0">—</span><span class="mbar" id="whyBar0" data-on="0"></span></div>
+          <div class="meter"><span>Clarity</span><span class="mv" id="whyMv1">—</span><span class="mbar" id="whyBar1" data-on="0"></span></div>
+          <div class="meter"><span>Commitment</span><span class="mv" id="whyMv2">—</span><span class="mbar" id="whyBar2" data-on="0"></span></div>
+        </div>
+        <p class="why-match-foot">Every value on the left is scored, not promised.</p>
+      </div>
+    </div>
+
     <div class="grid4" id="grid4">
       <article class="cell">
         <p class="clabel">01 — Structure</p>
@@ -1679,8 +1891,63 @@ html:not(.fx) .film .mover{display:none}
           <div class="hiw-bm-cta">Even the cube is yours to turn.</div>
           <div class="hiw-bm-dots"><i></i><i></i><i></i></div>
         </div>
+        <div class="hiw-bm hiw-bm--quiz" id="hiwBmQuiz">
+          <div class="hiw-bm-tag">— AITTE Detail®</div>
+          <div class="hiw-qz-wrap" id="hiwQzWrap">
+            <svg class="hiw-qz-wire" id="hiwQzWire" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <path id="hiwQzPath" d="M31,22 C31,30 58,26 61,34 C63,40 46,42 45,53 C44,58 35,56 34,64"/>
+              <circle id="hiwQzPulse" class="hiw-qz-pulse" r="1.6" cx="31" cy="22"/>
+            </svg>
+            <div class="hiw-qz-step hiw-qz-s1">
+              <div class="hiw-qz-dots"><i></i><i></i><i></i></div>
+              <span class="hiw-qz-k">STEP 1</span>
+              <b>The Quiz</b>
+              <small>What is your skin type?</small>
+            </div>
+            <div class="hiw-qz-step hiw-qz-s2">
+              <span class="hiw-qz-k">STEP 2</span>
+              <b>Select your skin type</b>
+              <label class="hiw-qz-opt"><input type="radio" name="hiwQzSkin" id="hiwQzOily" checked><span class="hiw-qz-dot"></span>Oily</label>
+              <label class="hiw-qz-opt"><input type="radio" name="hiwQzSkin" id="hiwQzDry"><span class="hiw-qz-dot"></span>Dry</label>
+              <label class="hiw-qz-opt"><input type="radio" name="hiwQzSkin" id="hiwQzBalanced"><span class="hiw-qz-dot"></span>Balanced</label>
+            </div>
+            <div class="hiw-qz-step hiw-qz-s3">
+              <span class="hiw-qz-k">STEP 3</span>
+              <b>Your Personalized Ritual</b>
+              <div class="hiw-qz-prods" aria-hidden="true"><i></i><i></i><i></i></div>
+              <button type="button" class="hiw-qz-cta" id="hiwQzCta">See Your Ritual</button>
+            </div>
+            <span class="hiw-bm-hint" id="hiwQzHint">pick your skin type</span>
+          </div>
+          <div class="hiw-bm-cta">Even the funnel feels alive.</div>
+          <div class="hiw-bm-dots"><i></i><i></i><i></i></div>
+        </div>
+        <div class="hiw-bm hiw-bm--flow" id="hiwBmFlow">
+          <div class="hiw-bm-tag">— AITTE Detail®</div>
+          <div class="hiw-fl-wrap" id="hiwFlWrap">
+            <div class="hiw-fl-chip" data-i="0" style="--i:0">
+              <span class="hiw-fl-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="currentColor"/></svg></span>
+              <div><b>Trigger</b><small>"New conversation starts"</small></div>
+            </div>
+            <div class="hiw-fl-chip" data-i="1" style="--i:1">
+              <span class="hiw-fl-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v10H9l-4 4V5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 3l.8 1.8L18.6 5.6 16.8 6.4 16 8.2 15.2 6.4 13.4 5.6 15.2 4.8z" fill="currentColor"/></svg></span>
+              <div><b>AI response</b><small>"Instant reply, no wait"</small></div>
+            </div>
+            <div class="hiw-fl-chip" data-i="2" style="--i:2">
+              <span class="hiw-fl-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="13" width="4" height="6" rx="2" fill="currentColor"/><rect x="17" y="13" width="4" height="6" rx="2" fill="currentColor"/></svg></span>
+              <div><b>Agent live control</b><small>"Jump in with one click"</small></div>
+            </div>
+            <div class="hiw-fl-chip" data-i="3" style="--i:3">
+              <span class="hiw-fl-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 12.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <div><b>Ticket created</b><small>"Nothing unresolved goes missing"</small></div>
+            </div>
+            <span class="hiw-bm-hint" id="hiwFlHint">drag to fan · tap to jump</span>
+          </div>
+          <div class="hiw-bm-cta">Even the hand-off never drops a thread.</div>
+          <div class="hiw-bm-dots"><i></i><i></i><i></i></div>
+        </div>
       </div>
-      <p class="hiw-caption">We don't just design pages — we design how they feel to touch. These six are for you to try.</p>
+      <p class="hiw-caption">We don't just design pages — we design how they feel to touch. These eight are for you to try.</p>
     </div>
   </div>
 </section>
@@ -1773,101 +2040,11 @@ html:not(.fx) .film .mover{display:none}
     </figure>
   </div>
 </section>
-
-<!-- SC 11 — REEL: film strips + trailer cards -->
-<section id="reel" class="reel" data-scene="Your website should work as hard as you do" aria-label="Showreel">
-  <div class="holo" id="holo" tabindex="0" aria-label="What we build. Drag, swipe or use the arrow keys to spin.">
-    <div class="holo-floor" aria-hidden="true"></div>
-    <div class="holo-beam" aria-hidden="true"></div>
-    <div class="holo-rig" id="holoRig">
-      <div class="orbit" aria-hidden="true"></div>
-      <div class="orbit orbit-b" aria-hidden="true"></div>
-      <ul class="ring" id="ringA">
-        <li class="hpanel" style="--i:0"><span>Web Design Rotterdam</span><i aria-hidden="true">A01</i></li>
-        <li class="hpanel" style="--i:1"><span>High Performance Websites</span><i aria-hidden="true">A02</i></li>
-        <li class="hpanel" style="--i:2"><span>SEO &amp; Visibility</span><i aria-hidden="true">A03</i></li>
-        <li class="hpanel" style="--i:3"><span>Built to Convert</span><i aria-hidden="true">A04</i></li>
-        <li class="hpanel" style="--i:4"><span>DDoS Protected Hosting</span><i aria-hidden="true">A05</i></li>
-        <li class="hpanel" style="--i:5"><span>Custom Website Design</span><i aria-hidden="true">A06</i></li>
-        <li class="hpanel" style="--i:6"><span>Local Business Websites</span><i aria-hidden="true">A07</i></li>
-        <li class="hpanel" style="--i:7"><span>Rotterdam Web Agency</span><i aria-hidden="true">A08</i></li>
-        <li class="hpanel" style="--i:8"><span>Mobile-First Design</span><i aria-hidden="true">A09</i></li>
-        <li class="hpanel" style="--i:9"><span>Google-Ready Indexing</span><i aria-hidden="true">A10</i></li>
-        <li class="hpanel" style="--i:10"><span>Real Results</span><i aria-hidden="true">A11</i></li>
-        <li class="hpanel" style="--i:11"><span>No Templates</span><i aria-hidden="true">A12</i></li>
-      </ul>
-      <ul class="ring ring-b" id="ringB">
-        <li class="chip" style="--i:0">React</li>
-        <li class="chip" style="--i:1">Next.js</li>
-        <li class="chip" style="--i:2">TypeScript</li>
-        <li class="chip" style="--i:3">Tailwind</li>
-        <li class="chip" style="--i:4">Node.js</li>
-        <li class="chip" style="--i:5">PostgreSQL</li>
-        <li class="chip" style="--i:6">Vercel</li>
-        <li class="chip" style="--i:7">Cloudflare</li>
-        <li class="chip" style="--i:8">GA4</li>
-        <li class="chip" style="--i:9">Search Console</li>
-        <li class="chip" style="--i:10">Schema.org</li>
-        <li class="chip" style="--i:11">Core Web Vitals</li>
-        <li class="chip" style="--i:12">Lighthouse 100</li>
-        <li class="chip" style="--i:13">Framer Motion</li>
-        <li class="chip" style="--i:14">Imperva</li>
-        <li class="chip" style="--i:15">F5 Distributed Cloud</li>
-      </ul>
-    </div>
-    <p class="holo-hint" aria-hidden="true"><span></span>Drag to spin</p>
-  </div>
-  <div class="trailer" id="trailer">
-    <div class="trailer-stage">
-      <div class="trailer-glow" id="trailerGlow" aria-hidden="true"></div>
-      <div class="trailer-tilt" id="trailerTilt">
-      <div class="tilt-far"><div class="city-far" id="cityFar" aria-hidden="true"><svg viewBox="0 0 3200 300" preserveAspectRatio="none"><path fill="#0b1422" d="M0 300 V91 H46 V300 Z M54 300 V163 H109 V300 Z M119 300 V220 H176 V300 Z M183 300 V261 H220 V300 Z M229 300 V242 H272 V300 Z M280 300 V267 H302 V300 Z M305 300 V269 H361 V300 Z M368 300 V217 H423 V300 Z M433 300 V239 H469 V300 Z M476 300 V253 H535 V300 Z M539 300 V222 H577 V300 Z M577 300 V183 H599 V300 Z M600 300 V246 H636 V300 Z M646 300 V257 H664 V300 Z M671 300 V109 H713 V300 Z M714 300 V230 H768 V300 Z M773 300 V251 H796 V300 Z M802 300 V211 H868 V300 Z M871 300 V264 H934 V300 Z M941 300 V239 H1010 V300 Z M1017 300 V177 H1067 V300 Z M1077 300 V109 H1119 V300 Z M1122 300 V253 H1140 V300 Z M1143 300 V245 H1172 V300 Z M1174 300 V242 H1205 V300 Z M1214 300 V135 H1253 V300 Z M1254 300 V265 H1276 V300 Z M1276 300 V115 H1332 V300 Z M1334 300 V176 H1389 V300 Z M1391 300 V261 H1449 V300 Z M1458 300 V224 H1491 V300 Z M1501 300 V111 H1554 V300 Z M1563 300 V244 H1586 V300 Z M1587 300 V238 H1607 V300 Z M1613 300 V244 H1647 V300 Z M1655 300 V211 H1684 V300 Z M1687 300 V235 H1735 V300 Z M1738 300 V223 H1769 V300 Z M1773 300 V242 H1817 V300 Z M1817 300 V252 H1846 V300 Z M1847 300 V262 H1888 V300 Z M1898 300 V226 H1962 V300 Z M1971 300 V206 H1991 V300 Z M1996 300 V251 H2058 V300 Z M2067 300 V266 H2125 V300 Z M2129 300 V262 H2167 V300 Z M2174 300 V247 H2226 V300 Z M2231 300 V265 H2271 V300 Z M2277 300 V269 H2345 V300 Z M2354 300 V246 H2414 V300 Z M2423 300 V265 H2445 V300 Z M2449 300 V126 H2493 V300 Z M2502 300 V242 H2549 V300 Z M2557 300 V238 H2623 V300 Z M2632 300 V240 H2655 V300 Z M2656 300 V221 H2705 V300 Z M2705 300 V251 H2746 V300 Z M2754 300 V123 H2782 V300 Z M2789 300 V250 H2822 V300 Z M2825 300 V243 H2883 V300 Z M2889 300 V233 H2921 V300 Z M2923 300 V239 H2949 V300 Z M2950 300 V218 H2985 V300 Z M2992 300 V156 H3040 V300 Z M3046 300 V237 H3104 V300 Z M3113 300 V250 H3159 V300 Z M3163 300 V268 H3219 V300 Z"/></svg></div></div>
-      <div class="tilt-near"><ol class="tcards" id="tcards">
-        <li class="tcard" style="--c:#FF8A5B;--cg:rgba(255,138,91,.16)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">01 / 08</span><span class="tc-t">Your website should work as hard as you do</span><span class="tc-l"><i aria-hidden="true"></i>Port of Rotterdam</span><span class="tc-geo" aria-hidden="true">51.9496° N · 4.1319° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm1"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M60 505 H300 L282 520 H80 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M100 505 V485 H160 V505 M160 485 H220 V505 M220 492 H270 V505"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M330 520 L342 300 M430 520 L418 300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M336 412 H424 M342 300 H418 M336 412 L418 300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M190 300 H660 M190 286 H660 M190 286 V300 M660 286 V300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M372 286 L382 190 L392 286"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M382 190 L200 286 M382 190 L650 286"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M560 300 V420"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M538 420 H582 V442 H538 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M690 520 L698 360 M760 520 L752 360 M698 360 H752"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M716 352 L830 150 M730 356 L842 156 M830 150 L842 156"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M722 352 L726 290 L830 150"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M800 520 V488 H880 V520 M800 504 H880 M840 488 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M880 520 V470 H960 V520 M880 495 H960 M920 470 V520"/></g></defs><use class="glow" href="#lm1"/><use class="line" href="#lm1"/><g class="wob"><use class="refl" href="#lm1" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-        <li class="tcard" style="--c:#8CCBFF;--cg:rgba(140,203,255,.16)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">02 / 08</span><span class="tc-t">Performance is not optional</span><span class="tc-l"><i aria-hidden="true"></i>Erasmusbrug</span><span class="tc-geo" aria-hidden="true">51.9080° N · 4.4874° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm2"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M40 470 H960 M40 480 H960"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M200 480 V520 M330 480 V520 M820 480 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M640 520 C632 490 626 460 628 430"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M668 520 C660 492 648 462 638 430"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M633 432 C640 360 660 260 700 150"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M645 432 C652 365 671 266 708 156 L700 150"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M653.2 353.9 L600 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M657.7 334.8 L559 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M662.2 315.6 L518 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M666.7 296.5 L477 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M671.2 277.4 L436 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M675.7 258.3 L395 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M680.2 239.2 L354 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M684.7 220 L313 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M689.2 200.9 L272 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M693.7 181.8 L231 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M700 155 L800 470 M696 170 L780 470"/></g></defs><use class="glow" href="#lm2"/><use class="line" href="#lm2"/><g class="wob"><use class="refl" href="#lm2" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-        <li class="tcard" style="--c:#FFD24A;--cg:rgba(255,210,74,.15)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">03 / 08</span><span class="tc-t">Built in Rotterdam</span><span class="tc-l"><i aria-hidden="true"></i>Kubuswoningen &amp; Het Potlood</span><span class="tc-geo" aria-hidden="true">51.9208° N · 4.4931° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm3"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M170 262 L228.9 296.0 L228.9 364.0 L170 398 L111.1 364.0 L111.1 296.0 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M111.1 296.0 L170 330 L228.9 296.0 M170 330 V398"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M161 394 V520 M179 394 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M300 262 L358.9 296.0 L358.9 364.0 L300 398 L241.1 364.0 L241.1 296.0 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M241.1 296.0 L300 330 L358.9 296.0 M300 330 V398"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M291 394 V520 M309 394 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M430 262 L488.9 296.0 L488.9 364.0 L430 398 L371.1 364.0 L371.1 296.0 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M371.1 296.0 L430 330 L488.9 296.0 M430 330 V398"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M421 394 V520 M439 394 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M560 262 L618.9 296.0 L618.9 364.0 L560 398 L501.1 364.0 L501.1 296.0 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M501.1 296.0 L560 330 L618.9 296.0 M560 330 V398"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M551 394 V520 M569 394 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M700 520 V200 L730 70 L760 200 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M700 200 H760"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M715 215 V505 M730 210 V505 M745 215 V505"/></g></defs><use class="glow" href="#lm3"/><use class="line" href="#lm3"/><g class="wob"><use class="refl" href="#lm3" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-        <li class="tcard" style="--c:#7DFF9A;--cg:rgba(125,255,154,.13)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">04 / 08</span><span class="tc-t">Security baked in from day one</span><span class="tc-l"><i aria-hidden="true"></i>Maeslantkering</span><span class="tc-geo" aria-hidden="true">51.9789° N · 4.1353° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm4"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M100 425 L450 300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M100 455 L450 515"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M100 425 L135 461 L170 400 L205 473 L240 375 L275 485 L310 350 L345 497 L380 325 L415 509 L450 300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M450 300 C478 360 478 468 450 518"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M438 306 C462 364 462 466 438 514"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M90 440 m-18 0 a18 18 0 1 0 36 0 a18 18 0 1 0 -36 0"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M50 520 V470 H120 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M900 425 L550 300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M900 455 L550 515"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M900 425 L865 461 L830 400 L795 473 L760 375 L725 485 L690 350 L655 497 L620 325 L585 509 L550 300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M550 300 C522 360 522 468 550 518"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M562 306 C538 364 538 466 562 514"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M910 440 m-18 0 a18 18 0 1 0 36 0 a18 18 0 1 0 -36 0"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M950 520 V470 H880 V520"/></g></defs><use class="glow" href="#lm4"/><use class="line" href="#lm4"/><g class="wob"><use class="refl" href="#lm4" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-        <li class="tcard" style="--c:#FF80B0;--cg:rgba(255,128,176,.15)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">05 / 08</span><span class="tc-t">No templates. Ever.</span><span class="tc-l"><i aria-hidden="true"></i>Markthal</span><span class="tc-geo" aria-hidden="true">51.9199° N · 4.4868° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm5"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M150 520 V340 A350 160 0 0 1 850 340 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M200 520 V345 A300 135 0 0 1 800 345 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M250 520 V350 A250 110 0 0 1 750 350 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M300 284 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M350 262 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M400 249.2 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M450 242.2 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M500 240 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M550 242.2 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M600 249.2 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M650 262 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M700 284 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M328.4 270 H671.6"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M277.3 300 H722.7"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M254.2 330 H745.8"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M250 380 H750"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M250 420 H750"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M250 460 H750"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M250 500 H750"/></g></defs><use class="glow" href="#lm5"/><use class="line" href="#lm5"/><g class="wob"><use class="refl" href="#lm5" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-        <li class="tcard" style="--c:#C4B5FD;--cg:rgba(196,181,253,.16)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">06 / 08</span><span class="tc-t">Lighthouse score: 100</span><span class="tc-l"><i aria-hidden="true"></i>Euromast</span><span class="tc-geo" aria-hidden="true">51.9041° N · 4.4687° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm6"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M488 520 V240 M512 520 V240"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M488 400 H512 M488 320 H512"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M430 246 H570 L556 230 H444 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M494 230 V92 M506 230 V92"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M468 160 H532 V146 H468 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M500 92 V40"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M260 520 C270 494 300 494 310 520 M330 520 C342 488 378 488 390 520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M620 520 C632 492 664 492 676 520 M700 520 C708 500 732 500 740 520"/></g></defs><use class="glow" href="#lm6"/><use class="line" href="#lm6"/><g class="wob"><use class="refl" href="#lm6" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-        <li class="tcard" style="--c:#6AF0FF;--cg:rgba(106,240,255,.13)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">07 / 08</span><span class="tc-t">Every pixel intentional</span><span class="tc-l"><i aria-hidden="true"></i>De Rotterdam</span><span class="tc-geo" aria-hidden="true">51.9068° N · 4.4931° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm7"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M300 520 V330 H385 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M310 330 V190 H395 V330"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M405 520 V350 H490 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M395 350 V160 H480 V350"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M510 520 V300 H595 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M522 300 V170 H607 V300"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M300 356 H385 M300 382 H385 M300 408 H385 M300 434 H385 M300 460 H385 M300 486 H385 M300 512 H385"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M395 186 H480 M395 212 H480 M395 238 H480 M395 264 H480 M395 290 H480 M395 316 H480 M395 342 H480"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M522 196 H607 M522 222 H607 M522 248 H607 M522 274 H607"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M650 512 H720 L712 520 H658 Z"/></g></defs><use class="glow" href="#lm7"/><use class="line" href="#lm7"/><g class="wob"><use class="refl" href="#lm7" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-        <li class="tcard" style="--c:#FFB547;--cg:rgba(255,181,71,.15)">
-          <div class="tc-copy"><span class="tc-k" aria-hidden="true">08 / 08</span><span class="tc-t">Clarity over chaos</span><span class="tc-l"><i aria-hidden="true"></i>Rotterdam Centraal</span><span class="tc-geo" aria-hidden="true">51.9244° N · 4.4691° E</span></div>
-          <svg class="tc-art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><defs><g id="lm8"><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M80 470 L600 440 L880 240 L905 252 L690 490 L80 490 Z"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M880 240 L700 470"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M200 463 L230 490 M320 456 L350 490 M440 449 L470 490 M560 442 L590 490"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M60 505 H560"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M160 490 V520 M300 490 V520 M440 490 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M630 452 V520 M660 470 V520 M690 490 V520"/><path pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="0" d="M600 512 H960"/></g></defs><use class="glow" href="#lm8"/><use class="line" href="#lm8"/><g class="wob"><use class="refl" href="#lm8" transform="translate(0 1040) scale(1 -1)"/></g><path class="water" d="M-4000 520 H5000"/><circle class="tc-trail" r="5.0" cx="-50" cy="-50"/><circle class="tc-trail" r="4.4" cx="-50" cy="-50"/><circle class="tc-trail" r="3.8" cx="-50" cy="-50"/><circle class="tc-trail" r="3.2" cx="-50" cy="-50"/><circle class="tc-trail" r="2.6" cx="-50" cy="-50"/><circle class="pen-g" r="11" cx="-50" cy="-50"/><circle class="pen" r="3.4" cx="-50" cy="-50"/><circle class="tc-burst" r="14" cx="-50" cy="-50"/></svg>
-        </li>
-      </ol></div>
-      </div>
-      <div class="tticks" id="tticks"><button type="button" aria-label="Show Port of Rotterdam"></button><button type="button" aria-label="Show Erasmusbrug"></button><button type="button" aria-label="Show Kubuswoningen &amp; Het Potlood"></button><button type="button" aria-label="Show Maeslantkering"></button><button type="button" aria-label="Show Markthal"></button><button type="button" aria-label="Show Euromast"></button><button type="button" aria-label="Show De Rotterdam"></button><button type="button" aria-label="Show Rotterdam Centraal"></button></div>
-      <p class="trailer-hint" id="trailerHint" aria-hidden="true"><span></span>Drag to scrub</p>
-    </div>
-  </div>
-</section>
-
-<!-- SC 12 — ABOUT -->
+<!-- SC 11 — ABOUT -->
 <section id="about" class="scene" data-scene="Who we are">
   <div class="wrap about">
     <header class="scene-head about-l" data-focus>
-      <p class="slate"><b>SC 12</b><span>Who we are</span></p>
+      <p class="slate"><b>SC 11</b><span>Who we are</span></p>
       <h2 class="h2">Building for<br><em>Businesses</em><br>That Are Serious.</h2>
       <p class="lede">AITTE is a <span class="hl">Rotterdam-based</span> web design studio focused on one thing: delivering <span class="hl">professional</span> digital products that perform, rank, and convert.</p>
     </header>
@@ -1884,7 +2061,7 @@ html:not(.fx) .film .mover{display:none}
   </div>
 </section>
 
-<!-- SC 13 — CONTACT: the terminal -->
+<!-- SC 12 — CONTACT: the terminal -->
 <section id="contact" class="scene contact" data-scene="~/aitte/contact">
   <div class="wrap">
     <div class="bfly-stage" id="bflyStage" aria-hidden="true">
@@ -1957,7 +2134,7 @@ html:not(.fx) .film .mover{display:none}
 
 </main>
 
-<!-- SC 14 — END CREDITS -->
+<!-- SC 13 — END CREDITS -->
 <footer id="credits" class="credits" data-scene="AITTE">
   <div class="holo-flower" id="holoFlower" aria-hidden="true">
     <div class="hf-tilt" id="hfTilt">
@@ -2006,27 +2183,29 @@ html:not(.fx) .film .mover{display:none}
     <span class="hf-tag">SPECIMEN_07 · HOLO-BLOOM</span>
   </div>
   <div class="sig" id="sig"><canvas aria-hidden="true"></canvas><p class="c-title">AITTE</p></div>
-  <p class="c-tag">Professional web design in Rotterdam. Built for performance, visibility, and real results.</p>
-  <div class="c-block">
-    <h2 class="c-role">Navigation</h2>
-    <ul class="c-names">
-      <li><a href="#process">Process</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#pricing">Pricing</a></li>
-      <li><a href="#vservice">VService</a></li>
-      <li><a href="#advisor">Price Advisor</a></li>
-      <li><a href="#howitworks">How It Works</a></li>
-      <li><a href="#security">About Security</a></li>
-    </ul>
+  <div class="ftr-bar" id="ftrBar">
+    <span class="ftr-bar-chip">EST. 2026</span>
+    <p class="ftr-bar-text">Professional web design in Rotterdam. Built for performance, visibility, and real results.</p>
+    <a class="ftr-bar-arrow" href="#contact" aria-label="Get in touch"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
-  <div class="c-block">
-    <h2 class="c-role">Get in touch</h2>
-    <ul class="c-names">
-      <li><a href="mailto:info@aite-rotterdam.com">info@aite-rotterdam.com</a></li>
-      <li>Rotterdam, Netherlands</li>
-    </ul>
+  <div class="ftr-band">
+  <div class="ftr-eyebrow ftr-eyebrow-c">// navigation</div>
+  <div class="ftr-steps" id="ftrSteps">
+    <a class="stp" href="#process"><span class="stp-glow" aria-hidden="true"></span><span class="stp-badge">01</span><span class="stp-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 3v4M10 13v4M3 10h4M13 10h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="10" cy="10" r="3.1" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span><span class="stp-t">Process</span></a>
+    <a class="stp" href="#about"><span class="stp-glow" aria-hidden="true"></span><span class="stp-badge">02</span><span class="stp-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10 9v5M10 6.6h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="stp-t">About</span></a>
+    <a class="stp" href="#pricing"><span class="stp-glow" aria-hidden="true"></span><span class="stp-badge">03</span><span class="stp-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3 10.5 9.5 4h6.5v6.5L10 17 3 10.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12.4" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg></span><span class="stp-t">Pricing</span></a>
+    <a class="stp" href="#vservice"><span class="stp-glow" aria-hidden="true"></span><span class="stp-badge">04</span><span class="stp-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M6 6 2.5 10 6 14M14 6l3.5 4-3.5 4M11.5 4.5l-3 11" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="stp-t">VService</span></a>
+    <a class="stp" href="#advisor"><span class="stp-glow" aria-hidden="true"></span><span class="stp-badge">05</span><span class="stp-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3 15.5 7.5 11l3 3L17 6" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.5 6H17v4.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="stp-t">Price Advisor</span></a>
+    <a class="stp" href="#howitworks"><span class="stp-glow" aria-hidden="true"></span><span class="stp-badge">06</span><span class="stp-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="3" y="3.5" width="14" height="3.6" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="8.3" width="14" height="3.6" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="13.1" width="14" height="3.6" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span><span class="stp-t">How It Works</span></a>
+    <a class="stp" href="#security"><span class="stp-glow" aria-hidden="true"></span><span class="stp-badge">07</span><span class="stp-ic" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 2.6 16.5 5v5.3c0 4-2.8 6.6-6.5 7.9-3.7-1.3-6.5-3.9-6.5-7.9V5L10 2.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7.3 10 9.2 11.9 12.8 8.1" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="stp-t">About Security</span></a>
+  </div>
+  <div class="ftr-contact">
+    <span class="ftr-eyebrow">// get in touch</span>
+    <a class="ftr-mail magnetic" href="mailto:info@aite-rotterdam.com">info@aite-rotterdam.com<svg class="fl-a" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>
+    <p class="ftr-loc">Rotterdam, Netherlands</p>
   </div>
   <div class="c-legal"><span>© 2026 AITTE Rotterdam. All rights reserved.</span><span>Rotterdam, Netherlands</span></div>
+  </div>
 </footer>
 
 <div class="t-cursor" id="tCursor" aria-hidden="true"><span class="tc-ring"></span><span class="tc-dot"></span></div>
@@ -2177,7 +2356,7 @@ var TP=tcards.map(function(li){var ps=$$('defs path',li),ls=ps.map(function(p){t
   if(!RM)ps.forEach(function(p){p.style.strokeDashoffset='1'});
   var t=li.querySelector('.tc-t'),geo=li.querySelector('.tc-geo');if(!RM){t.style.setProperty('--rv','0');if(geo)geo.style.setProperty('--rv','0')}
   return{ps:ps,ls:ls,tot:tot,t:t,geo:geo,pen:li.querySelector('.pen'),pg:li.querySelector('.pen-g'),trails:$$('.tc-trail',li),burst:li.querySelector('.tc-burst'),hist:[],doneFired:false,d:RM?1:0,rv:RM?1:0}});
-function measureTrailer(){var r=trailer.getBoundingClientRect();tTop=r.top+scrollY;tRange=Math.max(1,trailer.offsetHeight-VH)}
+function measureTrailer(){if(!trailer)return;var r=trailer.getBoundingClientRect();tTop=r.top+scrollY;tRange=Math.max(1,trailer.offsetHeight-VH)}
 function drawPanel(t,d){
   if(Math.abs(d-t.d)<.0015)return;var wasD=t.d;t.d=d;if(d<.95)t.doneFired=false;
   var tg=d*t.tot,acc=0,pp=null,pl=0;
@@ -2197,7 +2376,7 @@ function drawPanel(t,d){
   }
 }
 function setTrailer(dt){
-  if(RM)return;
+  if(RM||!trailer)return;
   var raw=(S.y-tTop)/tRange;if(raw<-2||raw>2)return;
   var lv=raw>0&&raw<1;if(lv!==trailer._lv){trailer.classList.toggle('is-playing',lv);trailer._lv=lv}
   var tp=clamp(raw,0,1);tPs+=(tp-tPs)*Math.min(1,dt*10);if(Math.abs(tp-tPs)<.0003)tPs=tp;
@@ -2216,7 +2395,7 @@ tticks.forEach(function(b,k){b.addEventListener('click',function(){trailer.class
 
 /* ---------- reel: settle on the nearest landmark once scrolling stops ---------- */
 (function(){
-  if(RM)return;
+  if(RM||!trailer)return;
   var settleT=null;
   function schedule(){
     if(settleT)clearTimeout(settleT);
@@ -2293,6 +2472,136 @@ tticks.forEach(function(b,k){b.addEventListener('click',function(){trailer.class
 
 /* ---------- reveals ---------- */
 $$('.mbar').forEach(function(b){var on=+b.getAttribute('data-on')||0,h='';for(var i=0;i<20;i++)h+='<i'+(i<on?' class="on"':'')+' style="--i:'+i+'"></i>';b.innerHTML=h});
+
+/* ---------- why: search pill + hopping dino + value nodes + match readout ---------- */
+(function(){
+  var console_=$('#whyConsole'),flow=$('.why-flow',console_),pill=$('#whyPill'),pillText=$('#whyPillText'),
+      dino=$('#whyDino'),rail=$('.why-rail',console_),railDot=$('#whyRailDot'),hint=$('#whyHint'),
+      nodes=$$('.why-node',console_),matchPct=$('#whyMatchPct'),
+      bars=[$('#whyBar0'),$('#whyBar1'),$('#whyBar2')],mvs=[$('#whyMv0'),$('#whyMv1'),$('#whyMv2')];
+  if(!console_||!flow||!pill||!dino||!nodes.length)return;
+  var QUERIES=['why aitte?','no templates. ever.','built to be found.','clarity over chaos.'];
+  var qi=0,qTimer=null;
+  function typeLoop(){
+    if(RM){pillText.textContent=QUERIES[0];return}
+    var word=QUERIES[qi%QUERIES.length],i=0,typing=true,hold=0;
+    clearInterval(qTimer);
+    qTimer=setInterval(function(){
+      if(pill.classList.contains('searching'))return;
+      if(typing){
+        i++;pillText.textContent=word.slice(0,i);
+        if(i>=word.length){typing=false;hold=0}
+      }else{
+        hold++;
+        if(hold>16){typing=false;var j=word.length;
+          (function back(){j--;pillText.textContent=word.slice(0,Math.max(0,j));if(j>0)setTimeout(back,28);else{qi++;i=0;typing=true;hold=0}})();
+          hold=-999;
+        }
+      }
+    },70);
+  }
+  typeLoop();
+
+  function pt(el){
+    var r=el.getBoundingClientRect(),fr=flow.getBoundingClientRect();
+    return [r.left-fr.left+r.width/2,r.top-fr.top+(el===pill?r.height/2:0)];
+  }
+  var state=0,running=false,auto=true,raf=0,hopT=0,hopFrom=null,hopTo=null,hopDur=.55,pauseT=0,PAUSE=1.05,cycling=false;
+  function targetPt(i){return i===0?pt(pill):pt(nodes[i-1])}
+  function setDinoAt(p){dino.style.left=(p[0]-20)+'px';dino.style.top=(p[1]-30)+'px'}
+  function markNodes(upTo){
+    nodes.forEach(function(n,idx){
+      n.classList.toggle('active',idx===upTo-1);
+      n.classList.toggle('done',idx<upTo-1);
+    });
+  }
+  function resetMatch(){
+    matchPct.textContent='0%';
+    bars.forEach(function(b){$$('i',b).forEach(function(i){i.classList.remove('on')})});
+    mvs.forEach(function(m){m.textContent='—'});
+  }
+  function fillMatch(){
+    var targets=[19,18,20],labels=['95','90','100'];
+    bars.forEach(function(b,bi){
+      var items=$$('i',b);
+      items.forEach(function(it,ii){if(ii<targets[bi]){if(RM)it.classList.add('on');else setTimeout(function(){it.classList.add('on')},ii*40)}});
+      mvs[bi].textContent=labels[bi];
+    });
+    if(RM){matchPct.textContent='100%';return}
+    var p0=performance.now();
+    (function step(now){
+      var t=clamp((now-p0)/900,0,1);
+      matchPct.textContent=Math.round(lerp(0,100,easeOut(t)))+'%';
+      if(t<1)requestAnimationFrame(step);
+    })(p0);
+  }
+  function startHop(toIdx){
+    hopFrom=targetPt(state);hopTo=targetPt(toIdx);hopT=0;state=toIdx;
+    var dir=hopTo[0]-hopFrom[0];
+    dino.style.setProperty('--flip',dir<-2?'scaleX(-1)':'scaleX(1)');
+    dino.classList.remove('hop');void dino.offsetWidth;dino.classList.add('hop');
+    if(toIdx>0)markNodes(toIdx);
+    if(toIdx===0){resetMatch();pill.classList.remove('searching');pillText.textContent='';typeLoop()}
+    if(toIdx===1){pill.classList.add('searching');pillText.textContent='Searching…';clearInterval(qTimer)}
+  }
+  function tick(now){
+    if(!running)return;
+    var dt=Math.min(.05,(now-(tick._l||now))/1000);tick._l=now;
+    if(hopFrom&&hopTo){
+      hopT+=dt/hopDur;
+      var t=clamp(hopT,0,1),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+      var x=lerp(hopFrom[0],hopTo[0],e),y=lerp(hopFrom[1],hopTo[1],e)-Math.sin(e*Math.PI)*26;
+      setDinoAt([x,y]);
+      if(railDot){var rb=rail.getBoundingClientRect(),fb=flow.getBoundingClientRect();railDot.style.opacity=t>.05&&t<.98?'1':'0';railDot.style.transform='translate3d('+(x)+'px,0,0)'}
+      if(t>=1){
+        hopFrom=null;hopTo=null;pauseT=0;
+        if(auto)pauseT=-PAUSE;
+      }
+    }else if(auto){
+      pauseT+=dt;
+      if(pauseT>=0){
+        var next=state+1;
+        if(next<=4){startHop(next);if(next===4){clearTimeout(tick._fill);tick._fill=setTimeout(fillMatch,hopDur*1000+120)}}
+        else{clearTimeout(tick._reset);tick._reset=setTimeout(function(){startHop(0)},2200);auto=false;setTimeout(function(){auto=true},2300+hopDur*1000);}
+      }
+    }
+    raf=requestAnimationFrame(tick);
+  }
+  function startLoop(){if(running)return;running=true;tick._l=0;raf=requestAnimationFrame(tick)}
+  function stopLoop(){running=false;cancelAnimationFrame(raf)}
+
+  nodes.forEach(function(n){
+    n.addEventListener('pointerdown',function(e){
+      e.preventDefault();
+      var i=+n.getAttribute('data-i')+1;
+      clearTimeout(tick._reset);clearTimeout(tick._fill);
+      pill.classList.remove('searching');
+      if(RM){state=i;setDinoAt(targetPt(i));markNodes(i);if(i===4)fillMatch();else resetMatch();return}
+      startHop(i);
+      if(i===4)setTimeout(fillMatch,hopDur*1000+120);
+      auto=true;
+    });
+  });
+  pill.addEventListener('pointerdown',function(e){
+    e.preventDefault();
+    clearTimeout(tick._reset);clearTimeout(tick._fill);
+    if(RM){state=0;setDinoAt(pt(pill));markNodes(0);resetMatch();pill.classList.remove('searching');return}
+    startHop(0);auto=true;
+  });
+
+  setDinoAt(pt(pill));
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){
+    if(en.isIntersecting){
+      if(RM){setDinoAt(pt(nodes[3]));markNodes(4);state=4;matchPct.textContent='100%';
+        var targets=[19,18,20],labels=['95','90','100'];
+        bars.forEach(function(b,bi){$$('i',b).forEach(function(it,ii){if(ii<targets[bi])it.classList.add('on')});mvs[bi].textContent=labels[bi]});
+      }else startLoop();
+    }
+    else stopLoop();
+  })},{threshold:.15});
+  io.observe(console_);
+  window.addEventListener('resize',function(){if(!hopFrom)setDinoAt(targetPt(state))});
+})();
 (function(){var del=.25;$$('#term .tl').forEach(function(l){var tx=l.querySelector('.tx'),tp=l.querySelector('.tp'),n=tx.textContent.length,dur=Math.max(.3,n*.03);
   tx.style.setProperty('--n',n);tx.style.setProperty('--dur',dur.toFixed(2)+'s');tx.style.setProperty('--del',del.toFixed(2)+'s');tp.style.setProperty('--del',del.toFixed(2)+'s');del+=dur+.35})})();
 function countUp(el){
@@ -2853,6 +3162,95 @@ if(b6V){b6V.addEventListener('click',function(){setModeV('c6')});b12V.addEventLi
   io.observe(wrap);
 })();
 
+/* ---------- how-it-works: quiz funnel, a flowing wire chains three real steps ---------- */
+(function(){
+  var wrap=$('#hiwQzWrap'),path=$('#hiwQzPath'),pulse=$('#hiwQzPulse'),hint=$('#hiwQzHint'),cta=$('#hiwQzCta');
+  if(!wrap||!path)return;
+  var radios=$$('input[name="hiwQzSkin"]',wrap);
+  var COL={hiwQzOily:'#8CCBFF',hiwQzDry:'#FFB547',hiwQzBalanced:'#7DFF9A'};
+  var seen=false;
+  function markSeen(){if(!seen){seen=true;hint&&hint.classList.add('seen');}}
+  function applyColor(){
+    var on=radios.filter(function(r){return r.checked})[0];
+    wrap.style.setProperty('--qz-pc',on?COL[on.id]:'#8CCBFF');
+  }
+  function fire(){if(RM||!cta)return;cta.classList.remove('go');void cta.offsetWidth;cta.classList.add('go')}
+  radios.forEach(function(r){r.addEventListener('change',function(){markSeen();applyColor();fire()})});
+  wrap.addEventListener('pointerdown',markSeen);
+  if(cta)cta.addEventListener('click',fire);
+  applyColor();
+  if(RM)return;
+  var tot=0;try{tot=path.getTotalLength()}catch(e){tot=0}
+  var running=false,t=0,last=0;
+  function tick(now){
+    if(!running)return;
+    var dt=Math.min(.05,(now-(last||now))/1000);last=now;t+=dt;
+    if(tot>0&&pulse){
+      var d=(t*.16)%1,p=path.getPointAtLength(d*tot);
+      pulse.setAttribute('cx',p.x.toFixed(2));pulse.setAttribute('cy',p.y.toFixed(2));
+      pulse.style.opacity=(d>.92?Math.max(0,(1-d)/.08):1).toFixed(2);
+    }
+    requestAnimationFrame(tick);
+  }
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){if(!running){running=true;last=0;requestAnimationFrame(tick)}}else running=false;})},{threshold:.1});
+  io.observe(wrap);
+})();
+
+/* ---------- how-it-works: AI support pipeline, stacked chips cycle on their own, fan on drag, tap to jump ---------- */
+(function(){
+  var wrap=$('#hiwFlWrap'),hint=$('#hiwFlHint');
+  if(!wrap)return;
+  var chips=$$('.hiw-fl-chip',wrap);
+  var n=chips.length;if(!n)return;
+  var active=0,spread=0,dragging=false,lastX=0,lastY=0,startX=0,startY=0,moved=0,downChip=null,seen=false,autoT=0,running=false,last=0;
+  function markSeen(){if(!seen){seen=true;hint&&hint.classList.add('seen');}}
+  function layout(){
+    var W=wrap.clientWidth||300,H=wrap.clientHeight||260;
+    chips.forEach(function(c,i){
+      var isActive=i===active;
+      var tx=(i*.09+spread*i*.08)*W,ty=(i*.21+spread*i*.10)*H,sc=1-i*.025+(isActive?.04:0);
+      c.style.transform='translate3d('+tx.toFixed(1)+'px,'+ty.toFixed(1)+'px,0) scale('+sc.toFixed(3)+')';
+      c.style.zIndex=4-i;
+      c.classList.toggle('active',isActive);
+    });
+  }
+  wrap.addEventListener('pointerdown',function(e){
+    dragging=true;lastX=e.clientX;lastY=e.clientY;startX=e.clientX;startY=e.clientY;moved=0;
+    downChip=e.target&&e.target.closest?e.target.closest('.hiw-fl-chip'):null;
+    wrap.classList.add('dragging');markSeen();
+    try{wrap.setPointerCapture(e.pointerId)}catch(err){}
+  });
+  wrap.addEventListener('pointermove',function(e){
+    if(!dragging)return;
+    var dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+    moved+=Math.abs(dx)+Math.abs(dy);
+    spread=Math.max(0,Math.min(1,spread+(Math.abs(dx)+Math.abs(dy))*.012));
+    layout();
+  });
+  function endDrag(){
+    if(!dragging)return;dragging=false;wrap.classList.remove('dragging');
+    if(moved<6&&downChip){var i=+downChip.getAttribute('data-i');if(!isNaN(i)){active=i;autoT=0;layout()}}
+  }
+  wrap.addEventListener('pointerup',endDrag);
+  wrap.addEventListener('pointercancel',endDrag);
+  wrap.addEventListener('pointerleave',function(){if(dragging)endDrag()});
+  layout();
+  if(RM)return;
+  function tick(now){
+    if(!running)return;
+    var dt=Math.min(.05,(now-(last||now))/1000);last=now;
+    if(!dragging){
+      spread+=(0-spread)*Math.min(1,dt*4);
+      autoT+=dt;
+      if(autoT>1.9){autoT=0;active=(active+1)%n;}
+    }
+    layout();
+    requestAnimationFrame(tick);
+  }
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){if(!running){running=true;last=0;requestAnimationFrame(tick)}}else running=false;})},{threshold:.1});
+  io.observe(wrap);
+})();
+
 /* ---------- contact: interactive 3D glowing butterfly ---------- */
 (function(){
   var stage=$('#bflyStage'),tilt=$('#bflyTilt'),coord=$('#bflyCoord'),landing=$('.bfly-landing');
@@ -2953,6 +3351,43 @@ if(b6V){b6V.addEventListener('click',function(){setModeV('c6')});b12V.addEventLi
   },{threshold:.1});
   io.observe(stage);
   window.addEventListener('resize',size);
+})();
+
+/* ---------- AITTE Detail cards: desync the ambient smoke loop ---------- */
+(function(){
+  $$('.hiw-bm').forEach(function(c,i){c.style.setProperty('--k',i)});
+})();
+
+/* ---------- footer: interactive tagline bar (cursor glow + gradient tilt) ---------- */
+(function(){
+  var bar=$('#ftrBar');if(!bar||!FINE||RM)return;
+  bar.addEventListener('pointermove',function(e){
+    var r=bar.getBoundingClientRect();
+    bar.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    bar.style.setProperty('--my',(e.clientY-r.top)+'px');
+    bar.style.setProperty('--hr',(((e.clientX-r.left)/r.width-.5)*34).toFixed(1));
+    bar.classList.add('hot');
+  });
+  bar.addEventListener('pointerleave',function(){bar.classList.remove('hot');bar.style.setProperty('--hr',0)});
+})();
+
+/* ---------- footer: neon-smoke step cards (ambient drift + cursor spotlight + stagger reveal) ---------- */
+(function(){
+  var steps=$('#ftrSteps');if(!steps)return;
+  var cards=$$('.stp',steps);
+  cards.forEach(function(c,i){c.style.setProperty('--k',i)});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){steps.classList.add('in');io.unobserve(e.target)}})},{threshold:.2});
+    io.observe(steps);
+  }else steps.classList.add('in');
+  if(!FINE||RM)return;
+  cards.forEach(function(c){
+    c.addEventListener('pointermove',function(e){
+      var r=c.getBoundingClientRect();
+      c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+      c.style.setProperty('--my',(e.clientY-r.top)+'px');
+    });
+  });
 })();
 
 /* ---------- footer: holographic wireframe flower, blown by cursor/touch motion ---------- */
@@ -3120,6 +3555,61 @@ function loadThree(){
   s.onerror=function(){threeState='failed';H.classList.add('no-webgl')};
   D.head.appendChild(s);
 }
+
+/* ---------- theme switch: Scene / Dark / Paper / Film, with ink-pour reveal ---------- */
+(function(){
+  var wrap=$('#themeSwitch'),btn=$('#tsBtn'),panel=$('#tsPanel'),opts=$$('.ts-opt',panel);
+  if(!wrap||!btn||!panel)return;
+  var THEME_BG={default:'#05070C',dark:'#000000',vibe:'#1A1222'};
+  var THEME_GLOW={default:'rgba(255,181,71,.45)',dark:'rgba(155,140,255,.42)',vibe:'rgba(232,162,61,.45)'};
+  var open=false;
+  function setOpen(v){
+    open=v;wrap.classList.toggle('open',v);btn.classList.toggle('open',v);btn.setAttribute('aria-expanded',v?'true':'false');
+  }
+  btn.addEventListener('pointerdown',function(e){e.preventDefault();e.stopPropagation();setOpen(!open)});
+  D.addEventListener('pointerdown',function(e){if(open&&!wrap.contains(e.target))setOpen(false)});
+  D.addEventListener('keydown',function(e){if(e.key==='Escape'&&open){setOpen(false);btn.focus()}});
+
+  function applyTheme(id){
+    if(id==='default')H.removeAttribute('data-theme');else H.setAttribute('data-theme',id);
+    var mt=$('meta[name="theme-color"]');if(mt)mt.setAttribute('content',THEME_BG[id]);
+    try{localStorage.setItem('aitteTheme',id)}catch(e){}
+    opts.forEach(function(o){o.classList.toggle('on',o.getAttribute('data-theme')===id)});
+  }
+
+  function pourReveal(id,x,y){
+    var ov=D.createElement('div');
+    ov.className='theme-reveal';
+    ov.style.setProperty('--tx',x+'px');ov.style.setProperty('--ty',y+'px');
+    ov.style.setProperty('--rv-bg',THEME_BG[id]);
+    ov.style.setProperty('--rv-glow',THEME_GLOW[id]);
+    D.body.appendChild(ov);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){ov.classList.add('grow')})});
+    setTimeout(function(){
+      applyTheme(id);
+      ov.classList.add('fade');
+      setTimeout(function(){ov.remove()},560);
+    },560);
+  }
+
+  opts.forEach(function(o){
+    o.addEventListener('pointerdown',function(e){
+      e.preventDefault();e.stopPropagation();
+      var id=o.getAttribute('data-theme');
+      if(id===(H.getAttribute('data-theme')||'default')){setOpen(false);return}
+      var r=btn.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+      setOpen(false);
+      if(RM)applyTheme(id);else pourReveal(id,x,y);
+    });
+  });
+
+  (function init(){
+    var saved='default';try{saved=localStorage.getItem('aitteTheme')||'default'}catch(e){}
+    if(!THEME_BG[saved]){saved='default';H.removeAttribute('data-theme');try{localStorage.setItem('aitteTheme','default')}catch(e){}}
+    opts.forEach(function(o){o.classList.toggle('on',o.getAttribute('data-theme')===saved)});
+    var mt=$('meta[name="theme-color"]');if(mt)mt.setAttribute('content',THEME_BG[saved]);
+  })();
+})();
 
 /* ---------- live Rotterdam clock + weather (Open-Meteo, no key needed) ---------- */
 var WXS={data:null,last:0},copyTop=0;
